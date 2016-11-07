@@ -1,0 +1,12 @@
+- You'll need to override the onLoad function in your batch list and pass this.load_assigned and this.load_unassigned as parameters to your load function. You'll also need all the little helper functions that save, load, and display the assigned/unassigned state. Then on the back end, you'll need your if-check block of whether g.Assigned/g.Unassigned is set, etc
+
+
+Go to the related products list and view the JS for RelatedProductList, BaseProductList_AssignList, and BaseProductList, taking particular notice of the following functions:
+
+LoadPreferences
+Product_Show
+Product_Show_SetActive
+Product_Show_SetValue
+Product_onSearch_GetFilter
+Product_onSearch_SaveFilter
+Product_onSearch_RestoreFilter
