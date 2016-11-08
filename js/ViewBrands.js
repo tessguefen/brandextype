@@ -8,6 +8,10 @@ DeriveFrom( MMBatchList_AssignList, ViewBrands_Batchlist );
 
 ViewBrands_Batchlist.prototype.onLoad = ViewBrands_List_Load_Query;
 
+ViewBrands_Batchlist.prototype.onLoad = function( filter, sort, offset, count, callback, delegator ) {
+	ViewBrands_List_Load_Query( this.load_assigned, this.load_unassigned, filter, sort, offset, count, callback, delegator );
+}
+
 ViewBrands_Batchlist.prototype.onCreateRootColumnList = function() {
 	var columnlist =
 	[

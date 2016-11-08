@@ -1,4 +1,4 @@
-function ViewBrands_List_Load_Query( filter, sort, offset, count, callback, delegator ) {
+function ViewBrands_List_Load_Query( assigned, unassigned, filter, sort, offset, count, callback, delegator ) {
 	return AJAX_Call_Module(	callback,
 								'admin',
 								'brandextype',
@@ -7,8 +7,8 @@ function ViewBrands_List_Load_Query( filter, sort, offset, count, callback, dele
 								'&Filter=' + EncodeArray( filter ) +
 								'&Sort=' + encodeURIComponent( sort ) +
 								'&Offset=' + encodeURIComponent( offset ) +
-								// '&Assigned=' + ( assigned ? '1' : '0' ) +
-					  	// 		'&Unassigned='	+ ( unassigned ? '1' : '0' ) +
+								'&Assigned=' + ( assigned ? '1' : '0' ) +
+					  			'&Unassigned='	+ ( unassigned ? '1' : '0' ) +
 								'&Count=' + encodeURIComponent( count ),
 								delegator );
 }

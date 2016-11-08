@@ -1,0 +1,257 @@
+<MvFUNCTION NAME = "Load_Type_ID" PARAMETERS = "type_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvIF EXPR = "{ ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetTypeID"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypes
+							WHERE
+								id = ?'
+							}"
+				FIELDS	= "l.type_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeID">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-2000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetTypeID.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeID">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE ID' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.type:id"		VALUE = "{ GetTypeID.d.id }">
+	<MvASSIGN NAME = "l.type:code"		VALUE = "{ GetTypeID.d.code }">
+	<MvASSIGN NAME = "l.type:name"		VALUE = "{ GetTypeID.d.name }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeID">
+	<MvFUNCTIONRETURN VALUE = "{ l.type }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Type_Code" PARAMETERS = "code" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetTypeCode"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypes
+							WHERE
+								code = ?'
+							}"
+				FIELDS	= "l.code">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeCode">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-2000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetTypeCode.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeCode">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find CODE' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.type:id"		VALUE = "{ GetTypeCode.d.id }">
+	<MvASSIGN NAME = "l.type:code"		VALUE = "{ GetTypeCode.d.code }">
+	<MvASSIGN NAME = "l.type:name"		VALUE = "{ GetTypeCode.d.name }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetTypeCode">
+	<MvFUNCTIONRETURN VALUE = "{ l.type }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Get_Product_Type" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+	<MvIF EXPR = "{ ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetProductType"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexProd
+							WHERE
+								product_id = ?'
+							}"
+				FIELDS	= "l.product_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductType">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-5000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetProductType.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductType">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.bxp:type_id" VALUE = "{ GetProductType.d.type_id }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductType">
+
+	<MvFUNCTIONRETURN VALUE = "{ Load_Type_ID( l.bxp:type_id ) }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "AddType" PARAMETERS = "code, name" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ Load_Type_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+
+	<MvASSIGN NAME = "l.type:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'bxtTypes' ) }">
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'INSERT INTO  ' $ g.Store_Table_Prefix $ 'bxtTypes
+							( id, code, name )
+							VALUES
+							(?, ?, ?)' }"
+			 FIELDS = "l.type:id, l.code, l.name">
+
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6005', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = "{ l.type:id }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "UpdateType" PARAMETERS = "id, code, name" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id" VALUE = "{ trim( l.id ) }">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+
+	<MvIF EXPR = "{ ISNULL l.id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.type_check" VALUE = "{ Load_Type_Code( l.code ) }">
+	<MvIF EXPR = "{ NOT ISNULL l.type_check:code AND (l.type_check:id NE l.id) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'bxtTypes
+							SET
+								code = ?,
+								name = ?
+							WHERE
+								id = ?' }"
+			 FIELDS = "l.code, l.name, l.id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6006', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "DeleteType" PARAMETERS = "id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id" VALUE = "{ trim( l.id ) }">
+	<MvIF EXPR = "{ ISNULL l.id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'bxtTypes WHERE id = ?' }"
+			 FIELDS = "l.id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6007', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Type_Insert" PARAMETERS = "code, name" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Type Code is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Please enter a Valid Code.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'name', 'Type Name is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ AddType(l.code, l.name) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Type_Delete" PARAMETERS = "type_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ DeleteType( l.type_id ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Type_Update" PARAMETERS = "id, code, name" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Type Code is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Please enter a Valid Code.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'name', 'Type Name is required.' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.type_check" VALUE = "{ Load_Type_Code( l.code ) }">
+	<MvIF EXPR = "{ NOT ISNULL l.type_check:code AND (l.type_check:id NE l.id) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'A Type with the code ' $ l.code $ ' already exists.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ UpdateType( l.id, l.code, l.name ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "UpdateProductType" PARAMETERS = "product_id, type_id" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>

@@ -1,0 +1,541 @@
+<MvFUNCTION NAME = "Load_Brand_ID" PARAMETERS = "brand_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.brand_id ) }">
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetBrandID"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtBrands
+							WHERE
+								id = ?'
+							}"
+				FIELDS	= "l.brand_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-4000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetBrandID.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find BRAND' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ GetBrandID.d.id }">
+	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ GetBrandID.d.code }">
+	<MvASSIGN NAME = "l.brand:name"		VALUE = "{ GetBrandID.d.name }">
+	<MvASSIGN NAME = "l.brand:image"	VALUE = "{ GetBrandID.d.image }">
+	<MvASSIGN NAME = "l.brand:icon"		VALUE = "{ GetBrandID.d.icon }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
+	<MvFUNCTIONRETURN VALUE = "{ l.brand }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Brand_Code" PARAMETERS = "code" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetBrandCode"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtBrands
+							WHERE
+								code = ?'
+							}"
+				FIELDS	= "l.code">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-1000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetBrandCode.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE CODE' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ GetBrandCode.d.id }">
+	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ GetBrandCode.d.code }">
+	<MvASSIGN NAME = "l.brand:name"		VALUE = "{ GetBrandCode.d.name }">
+	<MvASSIGN NAME = "l.brand:image"	VALUE = "{ GetBrandCode.d.image }">
+	<MvASSIGN NAME = "l.brand:icon"		VALUE = "{ GetBrandCode.d.icon }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
+	<MvFUNCTIONRETURN VALUE = "{ l.brand }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Get_Product_Brand" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+	<MvIF EXPR = "{ ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "GetProductBrand"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtBrandxProd
+							WHERE
+								product_id = ?'
+							}"
+				FIELDS	= "l.product_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductBrand">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-3000:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ GetProductBrand.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductBrand">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find BRAND' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.bxp:brand_id"		VALUE = "{ GetProductBrand.d.brand_id }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductBrand">
+
+	<MvFUNCTIONRETURN VALUE = "{ Load_Brand_ID( l.bxp:brand_id ) }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "AddBrand" PARAMETERS = "code, name, image, icon" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ Load_Brand_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+
+	<MvASSIGN NAME = "l.brand:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'bxtBrands' ) }">
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'INSERT INTO  ' $ g.Store_Table_Prefix $ 'bxtBrands
+							( id, code, name, image, icon )
+							VALUES
+							(?, ?, ?, ?, ?)' }"
+			 FIELDS = "l.brand:id, l.code, l.name, l.image, l.icon">
+
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6001', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = "{ l.brand:id }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "UpdateBrand" PARAMETERS = "id, code, name, image, icon" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id" VALUE = "{ trim( l.id ) }">
+	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+	<MvASSIGN NAME = "l.image" VALUE = "{ trim( l.image ) }">
+	<MvASSIGN NAME = "l.icon" VALUE = "{ trim( l.icon ) }">
+
+	<MvIF EXPR = "{ ISNULL l.id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code ) }">
+	<MvIF EXPR = "{ NOT ISNULL l.brand_check:code AND (l.brand_check:id NE l.id) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'bxtBrands
+							SET
+								code = ?,
+								name = ?,
+								image = ?,
+								icon = ?
+							WHERE
+								id = ?' }"
+			 FIELDS = "l.code, l.name, l.image, l.icon, l.id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6004', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "DeleteBrand" PARAMETERS = "id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id" VALUE = "{ trim( l.id ) }">
+	<MvIF EXPR = "{ ISNULL l.id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'bxtBrands WHERE id = ?' }"
+			 FIELDS = "l.id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6003', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "BrandxCat_Check" PARAMETERS = "brand_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtBrandxCat"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtBrandxCat
+							WHERE
+								brand_id = ?
+							AND
+								cat_id = ?'
+							}"
+				FIELDS	= "l.brand_id, l.cat_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtBrandxCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ bxtBrandxCat.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtBrandxCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE' ) }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtBrandxCat">
+
+	<MvFUNCTIONRETURN VALUE =1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "BrandxCat_Assign" PARAMETERS = "brand_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ BrandxCat_Check( l.brand_id, l.cat_id ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'INSERT INTO  ' $ g.Store_Table_Prefix $ 'bxtBrandxCat
+							( brand_id, cat_id )
+							VALUES
+							(?, ?)' }"
+			 FIELDS = "l.brand_id, l.cat_id">
+
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6009', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "BrandxCat_Unassign" PARAMETERS = "brand_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	
+	<MvIF EXPR = "{ NOT BrandxCat_Check( l.brand_id, l.cat_id ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'bxtBrandxCat WHERE brand_id = ? AND cat_id = ?' }"
+			 FIELDS = "l.brand_id, l.cat_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6010', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "JSON_Brands_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvASSIGN NAME = "g.Filter" VALUE = "{ trim( g.Filter ) }">
+	<MvASSIGN NAME = "g.Sort" VALUE = "{ trim( g.Sort ) }">
+	<MvASSIGN NAME = "g.Offset" VALUE = "{ trim( g.Offset ) }">
+	<MvASSIGN NAME = "g.Count" VALUE = "{ trim( g.Count ) }">
+	<MvASSIGN NAME = "l.search_query" VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'bxtBrands', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,code:s.code,name:s.name,image:s.image,icon:s.icon' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,code:s.code,name:s.name,image:s.image,icon:s.icon', 's.id' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'bxtBrands', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'BXT-MOD-6002',g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
+		{
+			"data":
+				[
+					<MvWHILE EXPR = "{ ( NOT bxtBrands.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.count LT g.Count ) ) }">
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.count )}">
+					"id": <MvEVAL EXPR = "{ int( bxtBrands.d.id ) }">,
+					"code": "<MvEVAL EXPR = "{ bxtBrands.d.code }">",
+					"name": "<MvEVAL EXPR = "{ bxtBrands.d.name }">",
+					"image": "<MvEVAL EXPR = "{ bxtBrands.d.image }">",
+					"image_prev": "<MvEVAL EXPR = "{ bxtBrands.d.image }">",
+					"icon": "<MvEVAL EXPR = "{ bxtBrands.d.icon }">",
+					"icon_prev": "<MvEVAL EXPR = "{ bxtBrands.d.icon }">"
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
+					<MvSKIP NAME = "Merchant" VIEW = "bxtBrands" ROWS = 1>
+					</MvWHILE>
+				],
+
+			"total_count": <MvEVAL EXPR = "{ int( l.total_count ) }">,
+			"start_offset": <MvEVAL EXPR = "{ int( g.Offset ) }">
+		}
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtBrands">
+	}
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Brand_Insert" PARAMETERS = "code, name, image, icon" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ l.code }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+	<MvASSIGN NAME = "l.image" VALUE = "{ l.image }">
+	<MvASSIGN NAME = "l.icon" VALUE = "{ l.icon }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Brand Code is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Please enter a Valid Code.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'name', 'Brand Name is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ AddBrand(l.code, l.name, l.image, l.icon) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Brand_Delete" PARAMETERS = "brand_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ DeleteBrand( l.brand_id ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Brand_Update" PARAMETERS = "id, code, name, image, icon" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.code" VALUE = "{ l.code }">
+	<MvASSIGN NAME = "l.name" VALUE = "{ trim( l.name ) }">
+	<MvASSIGN NAME = "l.image" VALUE = "{ l.image }">
+	<MvASSIGN NAME = "l.icon" VALUE = "{ l.icon }">
+
+	<MvIF EXPR = "{ ISNULL l.code }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Brand Code is required.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Code( l.code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Please enter a Valid Code.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.name }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'name', 'Brand Name is required.' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code ) }">
+	<MvIF EXPR = "{ NOT ISNULL l.brand_check:code AND (l.brand_check:id NE l.id) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'A Brand with the code ' $ l.code $ ' already exists.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ UpdateBrand( l.id, l.code, l.name, l.image, l.icon ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has Occurred.' ) }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Types_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvASSIGN NAME = "g.Filter" VALUE = "{ trim( g.Filter ) }">
+	<MvASSIGN NAME = "g.Sort" VALUE = "{ trim( g.Sort ) }">
+	<MvASSIGN NAME = "g.Offset" VALUE = "{ trim( g.Offset ) }">
+	<MvASSIGN NAME = "g.Count" VALUE = "{ trim( g.Count ) }">
+	<MvASSIGN NAME = "l.search_query" VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'bxtTypes', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,code:s.code,name:s.name' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,code:s.code,name:s.name', 's.id' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'bxtTypes', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'BXT-MOD-6003',g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
+		{
+			"data":
+				[
+					<MvWHILE EXPR = "{ ( NOT bxtTypes.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.count LT g.Count ) ) }">
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.count )}">
+					"id": <MvEVAL EXPR = "{ int( bxtTypes.d.id ) }">,
+					"code": "<MvEVAL EXPR = "{ bxtTypes.d.code }">",
+					"name": "<MvEVAL EXPR = "{ bxtTypes.d.name }">"
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
+					<MvSKIP NAME = "Merchant" VIEW = "bxtTypes" ROWS = 1>
+					</MvWHILE>
+				],
+
+			"total_count": <MvEVAL EXPR = "{ int( l.total_count ) }">,
+			"start_offset": <MvEVAL EXPR = "{ int( g.Offset ) }">
+		}
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypes">
+	}
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_ViewBrands_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
+	<MvASSIGN NAME = "g.Filter" VALUE = "{ trim( g.Filter ) }">
+	<MvASSIGN NAME = "g.Sort" VALUE = "{ trim( g.Sort ) }">
+	<MvASSIGN NAME = "g.Offset" VALUE = "{ trim( g.Offset ) }">
+	<MvASSIGN NAME = "g.Count" VALUE = "{ trim( g.Count ) }">
+	<MvASSIGN NAME = "g.Brand_ID" VALUE = "{ trim( g.Brand_ID ) }">
+
+	<MvASSIGN NAME = "l.search_query" VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'c.*, b.brand_id' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'Categories', 'c' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 'c', g.Store_Table_Prefix $ 'bxtBrandxCat', 'b', 'c.id = b.cat_id AND b.brand_id = ?', 'g.Brand_ID' ) }">
+
+	<MvIF EXPR = "{ g.Assigned EQ 1 AND g.Unassigned EQ 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'b.brand_id = ?', 'g.Brand_ID' ) }">
+	<MvELSEIF EXPR = "{ g.Unassigned EQ 1 AND g.Assigned EQ 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'b.brand_id IS NULL', '' ) }">
+	<MvELSE>
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, '1', '' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'assigned:b.brand_id,category_id:c.id,category_code:c.code,category_name:c.name,category_active:c.active' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'assigned:b.brand_id,category_id:c.id,category_code:c.code,category_name:c.name,category_active:c.active', 'c.disp_order' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'Categories', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'BXT-MOD-6011',g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
+		{
+			"data":
+				[
+					<MvWHILE EXPR = "{ ( NOT Categories.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.count LT g.Count ) ) }">
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.count )}">
+					"brand_id": <MvEVAL EXPR = "{ int( g.Brand_ID ) }">,
+					"assigned": <MvEVAL EXPR = "{ int( Categories.d.brand_id ) }">,
+					"category_id": <MvEVAL EXPR = "{ int( Categories.d.id ) }">,
+					"category_code" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( Categories.d.code ) }">",
+					"category_name" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( Categories.d.name ) }">",
+					"category_active": <MvEVAL EXPR = "{ int( Categories.d.active ) }">
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
+					<MvSKIP NAME = "Merchant" VIEW = "Categories" ROWS = 1>
+					</MvWHILE>
+				],
+
+			"total_count": <MvEVAL EXPR = "{ int( l.total_count ) }">,
+			"start_offset": <MvEVAL EXPR = "{ int( g.Offset ) }">
+		}
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Categories">
+	}
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_BrandxCat_Assign_Unassign" PARAMETERS = "brand_id, cat_id, assign" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+	<MvASSIGN NAME = "l.assign" VALUE = "{ trim( l.assign ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'brand_id', 'Brand ID is missing.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'cat_id', 'Category ID is missing.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.assign }">
+		<MvIF EXPR = "{ NOT BrandxCat_Assign( l.brand_id, l.cat_id ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'brand_id', 'An Error has occured.' ) }">
+		</MvIF>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.assign }">
+		<MvIF EXPR = "{ NOT BrandxCat_Unassign( l.brand_id, l.cat_id ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'brand_id', 'An Error has occured.' ) }">
+		</MvIF>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "UpdateProductBrand" PARAMETERS = "product_id, brand_id" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>
