@@ -1,11 +1,19 @@
-<MvFUNCTION NAME = "Load_Brand_ID" PARAMETERS = "brand_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Brand_Read" PARAMETERS = "brand var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ Brands.d.id }">
+	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ Brands.d.code }">
+	<MvASSIGN NAME = "l.brand:name"		VALUE = "{ Brands.d.name }">
+	<MvASSIGN NAME = "l.brand:image"	VALUE = "{ Brands.d.image }">
+	<MvASSIGN NAME = "l.brand:icon"		VALUE = "{ Brands.d.icon }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Brand_ID" PARAMETERS = "brand_id, brand var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.brand_id ) }">
 	<MvIF EXPR = "{ ISNULL l.code }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 	
 	<MvOPENVIEW	NAME	= "Merchant"
-				VIEW 	= "GetBrandID"
+				VIEW 	= "Brands"
 				QUERY 	= "{ 'SELECT
 								*
 							FROM ' $
@@ -16,33 +24,29 @@
 				FIELDS	= "l.brand_id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-4000:', g.MvQUERY_Error ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ GetBrandID.d.EOF }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
+	<MvIF EXPR = "{ Brands.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find BRAND' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ GetBrandID.d.id }">
-	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ GetBrandID.d.code }">
-	<MvASSIGN NAME = "l.brand:name"		VALUE = "{ GetBrandID.d.name }">
-	<MvASSIGN NAME = "l.brand:image"	VALUE = "{ GetBrandID.d.image }">
-	<MvASSIGN NAME = "l.brand:icon"		VALUE = "{ GetBrandID.d.icon }">
+	<MvEVAL EXPR = "{ Brand_Read( l.brand ) }">
 
-	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandID">
-	<MvFUNCTIONRETURN VALUE = "{ l.brand }" />
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
+	<MvFUNCTIONRETURN VALUE = "1" />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Load_Brand_Code" PARAMETERS = "code" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Load_Brand_Code" PARAMETERS = "code, brand var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.code" VALUE = "{ trim( l.code ) }">
 	<MvIF EXPR = "{ ISNULL l.code }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 	
 	<MvOPENVIEW	NAME	= "Merchant"
-				VIEW 	= "GetBrandCode"
+				VIEW 	= "Brands"
 				QUERY 	= "{ 'SELECT
 								*
 							FROM ' $
@@ -53,26 +57,22 @@
 				FIELDS	= "l.code">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-1000:', g.MvQUERY_Error ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ GetBrandCode.d.EOF }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
+	<MvIF EXPR = "{ Brands.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE CODE' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ GetBrandCode.d.id }">
-	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ GetBrandCode.d.code }">
-	<MvASSIGN NAME = "l.brand:name"		VALUE = "{ GetBrandCode.d.name }">
-	<MvASSIGN NAME = "l.brand:image"	VALUE = "{ GetBrandCode.d.image }">
-	<MvASSIGN NAME = "l.brand:icon"		VALUE = "{ GetBrandCode.d.icon }">
+	<MvEVAL EXPR = "{ Brand_Read( l.brand ) }">
 
-	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetBrandCode">
-	<MvFUNCTIONRETURN VALUE = "{ l.brand }" />
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
+	<MvFUNCTIONRETURN VALUE = "1" />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Get_Product_Brand" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Get_Product_Brand" PARAMETERS = "product_id, brand var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
 	<MvIF EXPR = "{ ISNULL l.product_id }">
 		<MvFUNCTIONRETURN VALUE = 0>
@@ -103,7 +103,9 @@
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "GetProductBrand">
 
-	<MvFUNCTIONRETURN VALUE = "{ Load_Brand_ID( l.bxp:brand_id ) }" />
+	<MvEVAL EXPR = "{ Load_Brand_ID( l.bxp:brand_id, l.brand ) }" />
+
+	<MvFUNCTIONRETURN VALUE = "1" />
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "AddBrand" PARAMETERS = "code, name, image, icon" STANDARDOUTPUTLEVEL = "">
@@ -122,7 +124,7 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvIF EXPR = "{ Load_Brand_Code( l.code ) }">
+	<MvIF EXPR = "{ Load_Brand_Code( l.code, l.null ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 	
@@ -157,7 +159,7 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code ) }">
+	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code, l.null ) }">
 	<MvIF EXPR = "{ NOT ISNULL l.brand_check:code AND (l.brand_check:id NE l.id) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -387,7 +389,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'name', 'Brand Name is required.' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code ) }">
+	<MvASSIGN NAME = "l.brand_check" VALUE = "{ Load_Brand_Code( l.code, l.null ) }">
 	<MvIF EXPR = "{ NOT ISNULL l.brand_check:code AND (l.brand_check:id NE l.id) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'A Brand with the code ' $ l.code $ ' already exists.' ) }">
 	</MvIF>
@@ -538,4 +540,24 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "UpdateProductBrand" PARAMETERS = "product_id, brand_id" STANDARDOUTPUTLEVEL = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "BrandList_Load_All" PARAMETERS = "brands var" STANDARDOUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "Brands"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'Brands ORDER BY id' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'BXT-MOD-00010', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.brands_count" VALUE = 0>
+	<MvWHILE EXPR = "{ NOT Brands.d.EOF }">
+		<MvASSIGN NAME = "l.brands_count" VALUE = "{ l.brands_count + 1 }">
+		<MvEVAL EXPR = "{ Brand_Read( l.brands[ l.brands_count ] ) }">
+		
+		<MvSKIP NAME = "Merchant" VIEW = "Brands" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "Brands">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Load All Brands' ) }">
 </MvFUNCTION>

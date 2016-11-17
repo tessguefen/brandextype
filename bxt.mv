@@ -406,7 +406,7 @@
 		<MvFUNCTIONRETURN VALUE = "" />
 	</MvIF>
 	<MvIF EXPR = "{ l.brand_or_type EQ 'brand' }">
-		<MvASSIGN NAME = "l.brand" VALUE = "{ Load_Brand_Code( l.value ) }">
+		<MvEVAL EXPR = "{ Load_Brand_Code( l.value, l.brand ) }" />
 		<MvIF EXPR = "{ l.brand:id }">
 			<MvFUNCTIONRETURN VALUE = "{ UpdateProductBrand( l.product_id, l.brand:id ) }" />
 		</MvIF>
@@ -426,7 +426,7 @@
 		<MvFUNCTIONRETURN VALUE = "">
 	</MvIF>
 	<MvIF EXPR = "{ l.brand_or_type EQ 'brand' }">
-		<MvASSIGN NAME = "l.brand" VALUE = "{ Get_Product_Brand( l.product_id ) }">
+		<MvEVAL EXPR = "{ Get_Product_Brand( l.product_id, l.brand ) }">
 		<MvIF EXPR = "{ l.brand:code }">
 			<MvFUNCTIONRETURN VALUE = "{ l.brand:code }" />
 		</MvIF>
