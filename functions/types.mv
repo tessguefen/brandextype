@@ -479,5 +479,78 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "TypexProd_Check" PARAMETERS = "type_id, product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtTypexProd"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexProd
+							WHERE
+								type_id = ?
+							AND
+								product_id = ?'
+							}"
+				FIELDS	= "l.type_id, l.product_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexProd">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ bxtTypexProd.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexProd">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE x PROD' ) }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexProd">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "UpdateProductType" PARAMETERS = "product_id, type_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TypexProd_Check( l.type_id, l.product_id) }">
+		<MvIF EXPR = "{ NOT TypexProd_Assign( l.type_id, l.product_id ) }">
+			<MvFUNCTIONRETURN VALUE = 0 />
+		</MvIF>
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexProd_Assign" PARAMETERS = "type_id, product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ TypexProd_Check( l.type_id, l.product_id ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'INSERT INTO  ' $ g.Store_Table_Prefix $ 'bxtTypexProd
+							( type_id, product_id )
+							VALUES
+							(?, ?)' }"
+			 FIELDS = "l.type_id, l.product_id">
+
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6009', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
