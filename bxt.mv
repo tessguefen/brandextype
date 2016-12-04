@@ -181,8 +181,8 @@
 	<MvELSEIF EXPR = "{ g.BXTScreen EQ 'VIEWTYPE' AND g.View_Type }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&View_Type=' $ encodeattribute( g.View_Type) $ '&Filename=ViewBrands_functions.js' }"></script>
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&View_Type=' $ encodeattribute( g.View_Type) $ '&Filename=ViewBrands.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&View_Type=' $ encodeattribute( g.View_Type) $ '&Filename=ViewTypes_functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&View_Type=' $ encodeattribute( g.View_Type) $ '&Filename=ViewTypes.js' }"></script>
 		<script language="JavaScript">
 			MMScreen_LoadFinished( function() { new ViewTypes_Batchlist(); } );
 		</script>
@@ -197,8 +197,8 @@
 	<MvELSEIF EXPR = "{ g.Tab EQ 'BXTTypes' }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Types_functions.js' }"></script>
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Types.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&Filename=Types_functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Store_Code=' $ encodeattribute( g.Store_Code ) $ '&Filename=Types.js' }"></script>
 		<script language="JavaScript">
 			MMScreen_LoadFinished( function() { new Types_Batchlist(); } );
 		</script>
@@ -267,6 +267,7 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN> </MvIF>
 	<MvIF EXPR = "{ g.Filename EQ 'Brands.js' }">
 		<MvINCLUDE FILE = "js/Brands.js">
 	</MvIF>
@@ -346,6 +347,10 @@
 
 	<MvIF EXPR = "{ g.Module_Function EQ 'BrandXCategoryAssign' }">
 		<MvFUNCTIONRETURN VALUE = "{ JSON_BrandxCat_Assign_Unassign( g.Brand_ID, g.Category_ID, g.Assign) }" />
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Module_Function EQ 'ViewTypes_Load_Query' }">
+		<MvFUNCTIONRETURN VALUE = "{ JSON_ViewTypes_Load_Query( l.module) }" />
 	</MvIF>
 </MvFUNCTION>
 
