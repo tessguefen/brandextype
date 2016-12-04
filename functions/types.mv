@@ -1,3 +1,42 @@
+<MvCOMMENT>
+	############################
+	Functions
+	############################
+	Load_Type_ID( type_id )
+		Load a type by ID
+	Load_Type_Code( code )
+		Load a type by code
+	Get_Product_Type( product_id )
+		Get a Product's type
+
+	AddType( code, name )
+		Add a new Type
+	UpdateType( id, code, name )
+		Update a type
+	DeleteType( id )
+		Delete a type
+
+	JSON_Type_Insert( code, name )
+	JSON_Type_Delete( type_id )
+	JSON_Type_Update( id, code, name )
+	JSON_Types_Load_Query( module var )
+	JSON_ViewTypes_Load_Query( module var )
+	JSON_TypexCat_Assign_Unassign( type_id, cat_id, assign )
+
+	TypexCat_Check( type_id, cat_id )
+		Check if a category is assigned to a type
+	TypexCat_Assign( type_id, cat_id )
+		Assign a category to a type
+	TypexCat_Unassign( type_id, cat_id )
+		Unassign a category from a type
+	TypexProd_Check( type_id, product_id )
+		Check if a product is assigned to a type
+	TypexProd_Assign( type_id, product_id )
+		Assign a product to a type
+
+	UpdateProductType( product_id, type_id )
+		Update a Product's Type
+</MvCOMMENT>
 <MvFUNCTION NAME = "Load_Type_ID" PARAMETERS = "type_id" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
 	<MvIF EXPR = "{ ISNULL l.type_id }">
@@ -515,21 +554,6 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "UpdateProductType" PARAMETERS = "product_id, type_id" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
-	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
-
-	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
-	<MvIF EXPR = "{ NOT TypexProd_Check( l.type_id, l.product_id) }">
-		<MvIF EXPR = "{ NOT TypexProd_Assign( l.type_id, l.product_id ) }">
-			<MvFUNCTIONRETURN VALUE = 0 />
-		</MvIF>
-	</MvIF>
-</MvFUNCTION>
-
 <MvFUNCTION NAME = "TypexProd_Assign" PARAMETERS = "type_id, product_id" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
 	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
@@ -553,4 +577,19 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6009', g.MvQUERY_Error ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "UpdateProductType" PARAMETERS = "product_id, type_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TypexProd_Check( l.type_id, l.product_id) }">
+		<MvIF EXPR = "{ NOT TypexProd_Assign( l.type_id, l.product_id ) }">
+			<MvFUNCTIONRETURN VALUE = 0 />
+		</MvIF>
+	</MvIF>
 </MvFUNCTION>

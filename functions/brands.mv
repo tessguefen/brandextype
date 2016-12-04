@@ -1,3 +1,55 @@
+<MvCOMMENT>
+	############################
+	Functions
+	############################
+	Load_Brand_ID( brand_id, brand var )
+		Load Brand Information by ID
+	Load_Brand_Code( code, brand var )
+		Load Brand Information by Code
+
+	Get_Product_Brand( product_id, brand var )
+		Get a Product's Brand by product ID
+	AddBrand( code, name, image, icon )
+		Add a Brand
+	UpdateBrand( id, code, name, image, icon )
+		Update a Brand
+	DeleteBrand( id )
+		Delete a Brand
+
+	BrandxCat_Check( brand_id, cat_id )
+		Check if a brand has a category assigned
+	BrandxCat_Assign( brand_id, cat_id )
+		Assign a category to a Brand
+	BrandxCat_Unassign( brand_id, cat_id )
+		Unassign a category from a brand
+
+	JSON_Brands_Load_Query( module var )
+	JSON_Brand_Insert( code, name, image, icon )
+	JSON_Brand_Delete( brand_id )
+	JSON_Brand_Update( id, code, name, image, icon )
+	JSON_ViewBrands_Load_Query( module var )
+	JSON_BrandxCat_Assign_Unassign( brand_id, cat_id, assign )
+
+	UpdateProductBrand( product_id, brand_id )
+		Update a Product's Brand, used in bxt.mv
+
+	BrandxProduct_Remove_Reference( product_id )
+		Remove the Product from the bxtBrandxProd table
+	BrandxProduct_Category_Assignments( brand_id, product_id )
+		Assign a product to brand's categories
+	BrandxCat_Load_No_Types( brand_id, brandxcat var )
+		Load in all categories assigned to a brand, that have no types
+	BrandxCat_Load_With_Type( brand_id, type_id )
+		Load in all categproes assigned to a brand, that also have a specific type
+	BrandxProd_Check( brand_id, product_id )
+		Check if a Product is assigned to a specific brand
+	BrandxProd_Assign( brand_id, product_id )
+		Assign a brand to a product
+	BrandList_Load_All( brands var )
+		### in progress, has some typoes
+	BrandxCat_Load( brand_id, brandxcat var )
+		Load in all categories from a brand, regardless of type
+</MvCOMMENT>
 <MvFUNCTION NAME = "Brand_Read" PARAMETERS = "brand var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.brand:id"		VALUE = "{ Brands.d.id }">
 	<MvASSIGN NAME = "l.brand:code"		VALUE = "{ Brands.d.code }">
@@ -734,6 +786,8 @@
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
+
+<MvCOMMENT> #### TESS TO UPDATE ### </MvCOMMENT>
 
 <MvFUNCTION NAME = "BrandList_Load_All" PARAMETERS = "brands var" STANDARDOUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
