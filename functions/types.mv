@@ -593,3 +593,189 @@
 		</MvIF>
 	</MvIF>
 </MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexProduct_Remove_Reference" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'bxtTypexProd WHERE product_id = ?' }"
+			 FIELDS = "l.product_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6010', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexProduct_Category_Assignments" PARAMETERS = "type_id, product_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ trim( l.product_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.product_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ TypexCat_Load_No_Brands( l.type_id, l.brandxcats) }">
+		<MvIF EXPR = "{ miva_array_elements( l.brandxcats ) GT 0 }">
+			<MvFOREACH ITERATOR = "l.cat" ARRAY = "l.brandxcats">
+				<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].CategoryXProduct_Load( l.cat:id, l.product_id, l.null ) }">
+					<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].CategoryXProduct_Insert( l.cat:id, l.product_id ) }">
+						<MvCOMMENT> ### ERROR HERE ### </MvCOMMENT>
+					</MvIF>
+				</MvIF>
+			</MvFOREACH>
+		</MvIF>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.load_product_brand" VALUE = "{ Get_Product_Brand( l.product_id, l.product_brand ) }">
+
+	<MvIF EXPR = "{ TypexCat_Load_With_Brand( l.type_id, l.product_brand:id, l.brandxcats_types) }">
+		<MvIF EXPR = "{ miva_array_elements( l.brandxcats_types ) GT 0 }">
+			<MvFOREACH ITERATOR = "l.cat" ARRAY = "l.brandxcats_types">
+				<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].CategoryXProduct_Load( l.cat:id, l.product_id, l.null ) }">
+					<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].CategoryXProduct_Insert( l.cat:id, l.product_id ) }">
+						<MvCOMMENT> ### ERROR HERE ### </MvCOMMENT>
+					</MvIF>
+				</MvIF>
+			</MvFOREACH>
+		</MvIF>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Load_No_Brands" PARAMETERS = "type_id, brandxcat var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtTypexCat"
+				QUERY 	= "{ 'SELECT
+								t.*, b.brand_id
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexCat as t
+							LEFT JOIN ' $
+								g.Store_Table_Prefix $ 'bxtBrandxCat as b
+							ON
+								t.cat_id = b.cat_id
+							WHERE
+								t.type_id = ?
+							AND
+								b.brand_id IS NULL'
+							}"
+				FIELDS	= "l.type_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ bxtTypexCat.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find BRAND x PROD' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.types_count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ NOT bxtTypexCat.d.EOF }">
+		<MvASSIGN NAME = "l.cats_count" VALUE = "{ l.cats_count + 1 }">
+		<MvASSIGN NAME = "l.brandxcat" INDEX = "{ l.cats_count }" MEMBER = "id" VALUE = "{ bxtTypexCat.d.cat_id }">		
+		<MvSKIP NAME = "Merchant" VIEW = "bxtTypexCat" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Load_With_Brand" PARAMETERS = "type_id, brand_id, brandxcat var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.brand_id" VALUE = "{ trim( l.brand_id ) }">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.brand_id OR ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtTypexCat"
+				QUERY 	= "{ 'SELECT
+								t.*, b.brand_id
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexCat as t
+							LEFT JOIN ' $
+								g.Store_Table_Prefix $ 'bxtTypexCat as b
+							ON
+								t.cat_id = b.cat_id
+							WHERE
+								t.type_id = ?
+							AND
+								t.type_id = ?'
+							}"
+				FIELDS	= "l.type_id, l.brand_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ bxtTypexCat.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find BRAND x PROD' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.types_count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ NOT bxtTypexCat.d.EOF }">
+		<MvASSIGN NAME = "l.cats_count" VALUE = "{ l.cats_count + 1 }">
+		<MvASSIGN NAME = "l.brandxcat" INDEX = "{ l.cats_count }" MEMBER = "id" VALUE = "{ bxtTypexCat.d.cat_id }">		
+		<MvSKIP NAME = "Merchant" VIEW = "bxtTypexCat" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Load" PARAMETERS = "type_id, brandxcat var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtTypexCat"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexCat
+							WHERE
+								type_id = ?'
+							}"
+				FIELDS	= "l.type_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.types_count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ NOT Brands.d.EOF }">
+		<MvASSIGN NAME = "l.types_count" VALUE = "{ l.types_count + 1 }">
+		<MvASSIGN NAME = "l.brandxcat" INDEX = "{ l.types_count }" MEMBER = "id" VALUE = "{ Brands.d.cat_id }">		
+		<MvSKIP NAME = "Merchant" VIEW = "bxtTypexCat" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
