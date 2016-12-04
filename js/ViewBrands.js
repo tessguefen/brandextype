@@ -23,7 +23,8 @@ ViewBrands_Batchlist.prototype.onCreateRootColumnList = function() {
 		.SetDisplayInMenu(false)
 		.SetDisplayInList(false)
 		.SetAdvancedSearchEnabled(false),
-		new MMBatchList_Column_CheckboxSlider('Assigned', 'assigned', 'assigned', function( item, checked, delegator ) { ViewBrands_Batchlist.Update_Approved( item, checked, delegator ); } ),
+		new MMBatchList_Column_CheckboxSlider('Assigned', 'assigned', 'assigned', function( item, checked, delegator ) { ViewBrands_Batchlist.Update_Approved( item, checked, delegator ); } )
+		.SetAdvancedSearchEnabled(false),
 		new MMBatchList_Column_Text( 'Category Code', 'category_code', 'category_code' ),
 		new MMBatchList_Column_Text( 'Category Name', 'category_name', 'category_name' ),
 		new MMBatchList_Column_Text( 'Category Active', 'category_active', 'category_active' )

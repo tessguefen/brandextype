@@ -309,11 +309,17 @@
 
 	<MvASSIGN NAME = "l.search_query" VALUE = "">
 
+	<MvIF EXPR = "{ g.Sort EQ 'assigned' }">
+		<MvASSIGN NAME = "g.Sort" VALUE = "-assigned">
+	<MvELSEIF EXPR = "{ g.Sort EQ '-assigned' }">
+		<MvASSIGN NAME = "g.Sort" VALUE = "assigned">
+	</MvIF>
+
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'c.*, t.type_id' ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'Categories', 'c' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 'c', g.Store_Table_Prefix $ 'bxtTypexCat', 't', 'c.id = t.type_id AND t.type_id = ?', 'g.Type_ID' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 'c', g.Store_Table_Prefix $ 'bxtTypexCat', 't', 'c.id = t.cat_id AND t.type_id = ?', 'g.Type_ID' ) }">
 
 	<MvIF EXPR = "{ g.Assigned EQ 1 AND g.Unassigned EQ 0 }">
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 't.type_id = ?', 'g.Type_ID' ) }">
@@ -359,6 +365,118 @@
 		}
 		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Categories">
 	}
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_TypexCat_Assign_Unassign" PARAMETERS = "type_id, cat_id, assign" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+	<MvASSIGN NAME = "l.assign" VALUE = "{ trim( l.assign ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'type_id', 'Type ID is missing.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'cat_id', 'Category ID is missing.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.assign }">
+		<MvIF EXPR = "{ NOT TypexCat_Assign( l.type_id, l.cat_id ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'type_id', 'An Error has occured.' ) }">
+		</MvIF>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.assign }">
+		<MvIF EXPR = "{ NOT TypexCat_Unassign( l.type_id, l.cat_id ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'type_id', 'An Error has occured.' ) }">
+		</MvIF>
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+	</MvIF>
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Check" PARAMETERS = "type_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW 	= "bxtTypexCat"
+				QUERY 	= "{ 'SELECT
+								*
+							FROM ' $
+								g.Store_Table_Prefix $ 'bxtTypexCat
+							WHERE
+								type_id = ?
+							AND
+								cat_id = ?'
+							}"
+				FIELDS	= "l.type_id, l.cat_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6008:', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ bxtTypexCat.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error# Could Not Find TYPE' ) }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "bxtTypexCat">
+
+	<MvFUNCTIONRETURN VALUE =1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Assign" PARAMETERS = "type_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ TypexCat_Check( l.type_id, l.cat_id ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'INSERT INTO  ' $ g.Store_Table_Prefix $ 'bxtTypexCat
+							( type_id, cat_id )
+							VALUES
+							(?, ?)' }"
+			 FIELDS = "l.type_id, l.cat_id">
+
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6009', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TypexCat_Unassign" PARAMETERS = "type_id, cat_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.type_id" VALUE = "{ trim( l.type_id ) }">
+	<MvASSIGN NAME = "l.cat_id" VALUE = "{ trim( l.cat_id ) }">
+
+	<MvIF EXPR = "{ ISNULL l.type_id OR ISNULL l.cat_id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	
+	<MvIF EXPR = "{ NOT TypexCat_Check( l.type_id, l.cat_id ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'bxtTypexCat WHERE type_id = ? AND cat_id = ?' }"
+			 FIELDS = "l.type_id, l.cat_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'BXT-MOD-6010', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "UpdateProductType" PARAMETERS = "product_id, type_id" STANDARDOUTPUTLEVEL = "">

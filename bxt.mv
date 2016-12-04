@@ -352,6 +352,10 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'ViewTypes_Load_Query' }">
 		<MvFUNCTIONRETURN VALUE = "{ JSON_ViewTypes_Load_Query( l.module) }" />
 	</MvIF>
+
+	<MvIF EXPR = "{ g.Module_Function EQ 'TypeXCategoryAssign' }">
+		<MvFUNCTIONRETURN VALUE = "{ JSON_TypexCat_Assign_Unassign( g.Type_ID, g.Category_ID, g.Assign) }" />
+	</MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>

@@ -411,6 +411,12 @@
 
 	<MvASSIGN NAME = "l.search_query" VALUE = "">
 
+	<MvIF EXPR = "{ g.Sort EQ 'assigned' }">
+		<MvASSIGN NAME = "g.Sort" VALUE = "-assigned">
+	<MvELSEIF EXPR = "{ g.Sort EQ '-assigned' }">
+		<MvASSIGN NAME = "g.Sort" VALUE = "assigned">
+	</MvIF>
+
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'c.*, b.brand_id' ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'Categories', 'c' ) }">
